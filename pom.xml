@@ -8,6 +8,11 @@
 		<version>2.6.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+	<groupId>com.mycompany.app</groupId>
+        <artifactId>my-app</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <name>Hello World</name>
+  
 	<groupId>PFE.Spring</groupId>
 	<artifactId>PFEProject</artifactId>
 	<version>1.0-RELEASE</version>
