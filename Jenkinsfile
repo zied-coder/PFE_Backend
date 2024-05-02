@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'M2_HOME'
+        maven 'maven'
         jdk 'JAVA_HOME'
     }
     environment {
@@ -88,3 +88,5 @@ pipeline {
 
     }
 }
+
+
