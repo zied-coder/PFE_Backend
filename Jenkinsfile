@@ -1,92 +1,65 @@
+
 pipeline {
     agent any
-
     tools {
-        maven 'maven'
-        jdk 'jdk'
+        maven "MAVEN"
     }
     environment {
-         dockerRegistry = 'hzied/spring-pfe'
-         dockerCredential = 'dockerhub_id'
-         dockerImage = ''
-         latestDockerImage=''
-
+        NEXUS_VERSION = "nexus3"
+        NEXUS_PROTOCOL = "http"
+        NEXUS_URL = "159.223.191.140:8081"
+        NEXUS_REPOSITORY = "java-app"
+        NEXUS_CREDENTIAL_ID = "NEXUS_CRED"
     }
-
     stages {
-        stage('Checkout GIT') {
+        stage("Clone code from GitHub") {
             steps {
-                echo 'Pulling...'
-                git branch: 'master',
-                    url: 'git@github.com:zied-coder/PFE-Sping.git',
-                    credentialsId: '30b84a81-08b9-4be5-85bd-be8ad70e7964'
-            }
-        }
-        stage('cleaning java Project'){
-            steps{
-                sh 'mvn clean compile'
+                script {
+                    git branch: 'main', credentialsId: 'githubwithpassword', url: 'https://github.com/devopshint/jenkins-nexus';
                 }
-        }
-        stage('build artifact'){
-            steps{
-                sh 'mvn package'
             }
         }
-
-        stage('testing maven'){
-             steps{
-                 sh 'mvn -version'
-             }
+        stage("Maven Build") {
+            steps {
+                script {
+                    sh "mvn package -DskipTests=true"
+                }
+            }
         }
-        stage('Building docker images') {
-             steps {
-                   script {
-                   dockerImage = docker.build dockerRegistry + ":1.0"
-                   latestDockerImage = docker.build dockerRegistry + ":latest"
-                   }
-             }
-        }
-        stage('Docker Login') {
-             steps {
-                    sh 'docker login -u hzied -p ziedhechmi98'
-             }
-        }
-        stage('Deploy docker images') {
-             steps {
-                    script {
-                         withDockerRegistry([credentialsId: 'dockerhub_id', url: '']) {
-                             dockerImage.push()
-                             latestDockerImage.push()
-                         }
+        stage("Publish to Nexus Repository Manager") {
+            steps {
+                script {
+                    pom = readMavenPom file: "pom.xml";
+                    filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
+                    echo "${filesByGlob[0].name} ${filesByGlob[0].path} ${filesByGlob[0].directory} ${filesByGlob[0].length} ${filesByGlob[0].lastModified}"
+                    artifactPath = filesByGlob[0].path;
+                    artifactExists = fileExists artifactPath;
+                    if(artifactExists) {
+                        echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
+                        nexusArtifactUploader(
+                            nexusVersion: NEXUS_VERSION,
+                            protocol: NEXUS_PROTOCOL,
+                            nexusUrl: NEXUS_URL,
+                            groupId: pom.groupId,
+                            version: pom.version,
+                            repository: NEXUS_REPOSITORY,
+                            credentialsId: NEXUS_CREDENTIAL_ID,
+                            artifacts: [
+                                [artifactId: pom.artifactId,
+                                classifier: '',
+                                file: artifactPath,
+                                type: pom.packaging],
+                                [artifactId: pom.artifactId,
+                                classifier: '',
+                                file: "pom.xml",
+                                type: "pom"]
+                            ]
+                        );
+                    } else {
+                        error "*** File: ${artifactPath}, could not be found";
                     }
-             }
-        }
-
-        stage('MVN SONARQUBE'){
-             steps{
-                    sh 'mvn sonar:sonar -Dsonar.login=admin -Dsonar.password=1998'
-             }
-        }
-
-        stage('docker-compose'){
-            steps{
-                sh 'docker-compose up -d'
+                }
             }
         }
-
-        stage('deploy jar to nexus'){
-              steps{
-                  sh 'mvn deploy:deploy-file -DgroupId=Pi.Spring \
-                        -DartifactId=PiProject \
-                        -Dversion=1.0 \
-                        -Dpackaging=jar \
-                        -Dfile=./target/PiProject-1.0-RELEASE.jar \
-                        -DrepositoryId=deploymentRepo \
-                        -Durl=http://172.10.0.140:8081/repository/maven-releases/'
-              }
-        }
-
     }
 }
-
-
