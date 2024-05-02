@@ -15,7 +15,7 @@ pipeline {
         stage("Clone code from GitHub") {
             steps {
                 script {
-                    git branch: 'master', credentialsId: 'jenkins12', url: 'https://github.com/zied-coder/PFE_Backend.git';
+                    git branch: 'master', credentialsId: 'jenkins12', url: 'https://github.com/zied-coder/PFE_Backend';
                 }
             }
         }
