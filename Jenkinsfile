@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         maven 'maven'
-        jdk 'JAVA_HOME'
+        jdk 'jdk'
     }
     environment {
          dockerRegistry = 'hzied/spring-pfe'
