@@ -9,13 +9,13 @@ pipeline {
         NEXUS_PROTOCOL = "http"
         NEXUS_URL = "localhost:8081"
         NEXUS_REPOSITORY = "java-app"
-        NEXUS_CREDENTIAL_ID = "NEXUS_CRED"
+        NEXUS_CREDENTIAL_ID = "jenkin12"
     }
     stages {
         stage("Clone code from GitHub") {
             steps {
                 script {
-                    git branch: 'main', credentialsId: 'githubwithpassword', url: 'https://github.com/devopshint/jenkins-nexus';
+                    git branch: 'master', credentialsId: 'jenkins12', url: 'https://github.com/zied-coder/PFE_Backend.git';
                 }
             }
         }
@@ -37,9 +37,9 @@ pipeline {
                     if(artifactExists) {
                         echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
                         nexusArtifactUploader(
-                            nexusVersion: NEXUS_VERSION,
-                            protocol: NEXUS_PROTOCOL,
-                            nexusUrl: NEXUS_URL,
+                            nexusVersion: nexus3,
+                            protocol: http,
+                            nexusUrl: localhost:8081,
                             groupId: pom.com.mycompany.app,
                             version: pom.1.0-SNAPSHOT,
                             repository: maven-central,
