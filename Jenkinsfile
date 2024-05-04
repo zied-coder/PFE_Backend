@@ -14,14 +14,12 @@ pipeline {
     }
 
     stages {
-        stage('Checkout GIT') {
-            steps {
-                echo 'Pulling...'
-                git branch: 'master',
-                    url: 'git@github.com:zied-coder/PFE-Sping.git',
-                    credentialsId: '30b84a81-08b9-4be5-85bd-be8ad70e7964'
-            }
-        }
+         stage('Checkout') {
+                    steps {
+                        // Checkout code from Git repository
+                        git credentialsId: 'token_git', url: 'https://github.com/zied-coder/PFE_Backend.git'
+                    }
+         }
         stage('cleaning java Project'){
             steps{
                 sh 'mvn clean compile'
