@@ -20,9 +20,9 @@
 	<name>PFEProject</name>
 	<description>PFEProject</description>
 	<properties>
-		<jetty-maven-plugin.version>9.4.43.v20210629</jetty-maven-plugin.version>
-		<java.version>11</java.version>
-		<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+		
+		<java.version>17</java.version>
+		<maven-jar-plugin.version>3.9.6</maven-jar-plugin.version>
 		<jacoco.version>0.8.8</jacoco.version>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
