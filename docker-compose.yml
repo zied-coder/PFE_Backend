@@ -1,14 +1,8 @@
-version: '3.1'
+version: '3'
 services:
   api:
-    image: hzied/spring-pfe
-    container_name: pfe
-    ports:
-      - ${SPRING_LOCAL_PORT}:${SPRING_DOCKER_PORT}
-    depends_on:
-      - db
-    env_file:
-      - ./.env
+    image: pfe_backend
+    container_name: PFEProject
     environment:
       SPRING_APPLICATION_JSON: '{
             "server.port" : "$SPRING_LOCAL_PORT",
@@ -19,25 +13,26 @@ services:
             "spring.jpa.hibernate.ddl-auto" : "update"
           }'
     restart: on-failure
-
-
-  db:
-    image: mysql
-    container_name: mysqldb
     ports:
-      - ${MYSQLDB_LOCAL_PORT}:${MYSQLDB_DOCKER_PORT}
-    environment:
-      - MYSQL_DB=${MYSQLDB_DATABASE}
-      - MYSQL_ROOT_PASSWORD=${MYSQLDB_ROOT_PASSWORD}
+      - "8082:8082"
+    depends_on:
+      - mysqldb
     volumes:
-      - pfe_data:/var/lib/mysql
-    restart: unless-stopped
+      - app_data:/app/data
 
-  adminer:
-    image: adminer
+
+  mysqldb:
+    container_name: mysqldb
+    image: mysql:latest  # You can use a different version if needed
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_DATABASE: devops
     ports:
-      - '8082:8080'
-    restart: unless-stopped
+      - "3306:3306"  # Map MySQL's port to the host
+
+    volumes:
+      - db:/var/lib/mysql
 
 volumes:
-  pfe_data:
+  app_data:
+  db:

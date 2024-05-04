@@ -1,7 +1,7 @@
 server:
     servlet:
         context-path: /Stage
-    port: 8083
+    port: 8082
 
 spring:
     datasource:
@@ -46,3 +46,15 @@ application:
 
 
 
+management:
+    endpoints:
+        web:
+            exposure:
+                include: "*"
+        prometheus:
+            enabled: true
+    endpoint:
+        metrics:
+            enabled: true
+        health:
+            show-details: always

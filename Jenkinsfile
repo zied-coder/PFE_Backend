@@ -1,93 +1,90 @@
 pipeline {
     agent any
-    tools {
-        maven "maven"
-        jdk "jdk"
-    }
 
+    tools {
+        maven 'M2_HOME'
+        jdk 'JAVA_HOME'
+    }
     environment {
-        // This can be nexus3 or nexus2
-        NEXUS_VERSION = "nexus3"
-        // This can be http or https
-        NEXUS_PROTOCOL = "http"
-        // Where your Nexus is running
-        NEXUS_URL = "localhost:8081"
-        // Repository where we will upload the artifact
-        NEXUS_REPOSITORY = "maven-nexus-repo"
-        // Jenkins credential id to authenticate to Nexus OSS
-        NEXUS_CREDENTIAL_ID = "nexus-user-repo"
-        ARTIFACT_VERSION = "${BUILD_NUMBER}"
+         dockerRegistry = 'hzied/spring-pfe'
+         dockerCredential = 'dockerhub_id'
+         dockerImage = ''
+         latestDockerImage=''
+
     }
 
     stages {
-        stage("Check out") {
+        stage('Checkout GIT') {
             steps {
-                script {
-                    git branch: 'master', url: 'https://github.com/zied-coder/PFE_Backend.git';
-                }
+                echo 'Pulling...'
+                git branch: 'master',
+                    url: 'git@github.com:zied-coder/PFE-Sping.git',
+                    credentialsId: '30b84a81-08b9-4be5-85bd-be8ad70e7964'
             }
         }
-
-        stage("mvn build") {
-            steps {
-                script {
-                    sh "mvn clean package"
-                }
-            }
-        }
-
-        stage("publish to nexus") {
-            steps {
-                script {
-                    // Read POM xml file using 'readMavenPom' step , this step 'readMavenPom' is included in: https://plugins.jenkins.io/pipeline-utility-steps
-                    pom = readMavenPom file: "pom.xml";
-                    // Find built artifact under target folder
-                    filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
-                    // Print some info from the artifact found
-                    echo "${filesByGlob[0].name} ${filesByGlob[0].path} ${filesByGlob[0].directory} ${filesByGlob[0].length} ${filesByGlob[0].lastModified}"
-                    // Extract the path from the File found
-                    artifactPath = filesByGlob[0].path;
-                    // Assign to a boolean response verifying If the artifact name exists
-                    artifactExists = fileExists artifactPath;
-
-                    if(artifactExists) {
-                        echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
-
-                        nexusArtifactUploader(
-                            nexusVersion: NEXUS_VERSION,
-                            protocol: NEXUS_PROTOCOL,
-                            nexusUrl: NEXUS_URL,
-                            groupId: pom.groupId,
-                            version: ARTIFACT_VERSION,
-                            repository: NEXUS_REPOSITORY,
-                            credentialsId: NEXUS_CREDENTIAL_ID,
-                            artifacts: [
-                                // Artifact generated such as .jar, .ear and .war files.
-                                [artifactId: pom.artifactId,
-                                classifier: '',
-                                file: artifactPath,
-                                type: pom.packaging]
-                            ]
-                        );
-
-                    } else {
-                        error "*** File: ${artifactPath}, could not be found";
-                    }
-                }
-            }
-        }
-        stage ('Execute Ansible Play - CD'){
-            agent {
-                label 'ansible'
-            }
+        stage('cleaning java Project'){
             steps{
-                script {
-                    git branch: 'master', url: 'https://github.com/zied-coder/PFE_Backend.git';
+                sh 'mvn clean compile'
                 }
-                sh '''
-                    ansible-playbook -e vers=${BUILD_NUMBER} roles/site.yml
-                '''
+        }
+        stage('build artifact'){
+            steps{
+                sh 'mvn package'
             }
         }
+
+        stage('testing maven'){
+             steps{
+                 sh 'mvn -version'
+             }
+        }
+        stage('Building docker images') {
+             steps {
+                   script {
+                   dockerImage = docker.build dockerRegistry + ":1.0"
+                   latestDockerImage = docker.build dockerRegistry + ":latest"
+                   }
+             }
+        }
+        stage('Docker Login') {
+             steps {
+                    sh 'docker login -u hzied -p ziedhechmi98'
+             }
+        }
+        stage('Deploy docker images') {
+             steps {
+                    script {
+                         withDockerRegistry([credentialsId: 'dockerhub_id', url: '']) {
+                             dockerImage.push()
+                             latestDockerImage.push()
+                         }
+                    }
+             }
+        }
+
+        stage('MVN SONARQUBE'){
+             steps{
+                    sh 'mvn sonar:sonar -Dsonar.login=admin -Dsonar.password=1998'
+             }
+        }
+
+        stage('docker-compose'){
+            steps{
+                sh 'docker-compose up -d'
+            }
+        }
+
+        stage('deploy jar to nexus'){
+              steps{
+                  sh 'mvn deploy:deploy-file -DgroupId=Pi.Spring \
+                        -DartifactId=PiProject \
+                        -Dversion=1.0 \
+                        -Dpackaging=jar \
+                        -Dfile=./target/PiProject-1.0-RELEASE.jar \
+                        -DrepositoryId=deploymentRepo \
+                        -Durl=http://172.10.0.140:8081/repository/maven-releases/'
+              }
+        }
+
     }
 }
