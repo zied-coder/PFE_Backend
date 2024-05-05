@@ -159,17 +159,37 @@
 					</excludes>
 				</configuration>
 			</plugin>
+	    <plugin>
+	      <!-- Build an executable JAR -->
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-jar-plugin</artifactId>
+	      <version>3.1.0</version>
+	      <configuration>
+	        <archive>
+	          <manifest>
+	            <addClasspath>true</addClasspath>
+	            <classpathPrefix>lib/</classpathPrefix>
+	            <mainClass>com.mt.sample.HelloWorld</mainClass>
+	          </manifest>
+	        </archive>
+	      </configuration>
+	    </plugin>
+
+		<plugin>
+        			 <groupId>org.sonarsource.scanner.maven</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <version>3.7.0.1746</version>
+  
+      		</plugin>
+
+		<plugin>
+            		<groupId>org.codehaus.mojo</groupId>
+            		<artifactId>sonar-maven-plugin</artifactId>
+            		<version>3.7</version>
+        		</plugin>
 
 		</plugins>
-			<pluginManagement>
-				<plugins>
-					<plugin>
-						<groupId>org.sonarsource.scanner.maven</groupId>
-						<artifactId>sonar-maven-plugin</artifactId>
-						<version>3.7.0.1746</version>
-					</plugin>
-				</plugins>
-			</pluginManagement>
+
 	</build>
 
 	<distributionManagement>
