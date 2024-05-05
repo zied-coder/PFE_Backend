@@ -15,9 +15,6 @@
 	<description>PFEProject</description>
 	<properties>
 		<java.version>11</java.version>
-		<sonar.host.url>
-			http://192.168.33.10:9000
-		</sonar.host.url>
 	</properties>
 
 	<dependencies>
@@ -41,6 +38,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.7.0</version>
 		</dependency>
 
 		<dependency>
@@ -136,17 +139,31 @@
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-core</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.sonarsource.scanner.maven</groupId>
-			<artifactId>sonar-maven-plugin</artifactId>
-			<version>3.6.1.1688</version>
-		</dependency>
+
 	</dependencies>
 
 
 	<build>
 		<plugins>
-
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.7</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -159,37 +176,7 @@
 					</excludes>
 				</configuration>
 			</plugin>
-	    <plugin>
-	      <!-- Build an executable JAR -->
-	      <groupId>org.apache.maven.plugins</groupId>
-	      <artifactId>maven-jar-plugin</artifactId>
-	      <version>3.1.0</version>
-	      <configuration>
-	        <archive>
-	          <manifest>
-	            <addClasspath>true</addClasspath>
-	            <classpathPrefix>lib/</classpathPrefix>
-	            <mainClass>com.mt.sample.HelloWorld</mainClass>
-	          </manifest>
-	        </archive>
-	      </configuration>
-	    </plugin>
-
-		<plugin>
-        			 <groupId>org.sonarsource.scanner.maven</groupId>
-        <artifactId>sonar-maven-plugin</artifactId>
-        <version>3.7.0.1746</version>
-  
-      		</plugin>
-
-		<plugin>
-            		<groupId>org.codehaus.mojo</groupId>
-            		<artifactId>sonar-maven-plugin</artifactId>
-            		<version>3.7</version>
-        		</plugin>
-
 		</plugins>
-
 	</build>
 
 	<distributionManagement>
@@ -201,6 +188,6 @@
 
 
 	</distributionManagement>
-	
+
 
 </project>
