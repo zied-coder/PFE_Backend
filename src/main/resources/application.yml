@@ -5,14 +5,14 @@ server:
 
 spring:
     datasource:
-        url: jdbc:mysql://localhost:3306/devops?createDatabaseIfNotExist=true
+        url: jdbc:mysql://mysqldb:3306/restitution?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
         username: root
         password:
     data:
         mongodb:
-            host: localhost
+            host: mongodb
             port: 27017
-            database: Controlleur
+            database: mysqldb
 
     jpa:
         show-sql: true

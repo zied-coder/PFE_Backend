@@ -1,14 +1,17 @@
 version: '3'
 services:
-  api:
-    image: pfe_backend
-    container_name: PFEProject
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ziedhechmi/pfe_backend
+    container_name: pfe_backend
     environment:
       SPRING_APPLICATION_JSON: '{
-            "server.port" : "$SPRING_LOCAL_PORT",
-            "spring.datasource.url"  : "jdbc:mysql://mysqldb:$MYSQLDB_DOCKER_PORT/$MYSQLDB_DATABASE?createDatabaseIfNotExist=true",
-            "spring.datasource.username" : "$MYSQLDB_USER",
-            "spring.datasource.password" : "$MYSQLDB_ROOT_PASSWORD",
+            "server.port" : "8082",
+            "spring.datasource.url"  : "jdbc:mysql://mysqldb:3306/restitution?createDatabaseIfNotExist=true",
+            "spring.datasource.username" : "root",
+            "spring.data.mongodb.uri"  : "mongodb://mongodb:27017/restitution",
             "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL5InnoDBDialect",
             "spring.jpa.hibernate.ddl-auto" : "update"
           }'
@@ -17,22 +20,30 @@ services:
       - "8082:8082"
     depends_on:
       - mysqldb
+      - mongodb
     volumes:
       - app_data:/app/data
 
-
   mysqldb:
     container_name: mysqldb
-    image: mysql:latest  # You can use a different version if needed
+    image: mysql:latest
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
       MYSQL_DATABASE: devops
     ports:
-      - "3306:3306"  # Map MySQL's port to the host
-
+      - "3306:3306"
     volumes:
       - db:/var/lib/mysql
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
 
 volumes:
   app_data:
   db:
+  mongodb_data:
