@@ -19,6 +19,8 @@ services:
       - MANAGEMENT.ENDPOINT.PROMETHEUS.ENABLED=true
       - MANAGEMENT.ENDPOINT.METRICS.ENABLED=true
       - management.endpoint.health.show-details=always
+      - SPRING_DATA_MONGODB_USERNAME=admin
+      - SPRING_DATA_MONGODB_PASSWORD=adminpassword
     restart: on-failure
     ports:
       - "8082:8082"
@@ -43,6 +45,9 @@ services:
     volumes:
       - mongodb_data:/data/mongo
     container_name: mongo_db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=adminpassword
 
 volumes:
   db_data_mysql:
