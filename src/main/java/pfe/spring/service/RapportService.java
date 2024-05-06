@@ -4,7 +4,7 @@ import pfe.spring.entity.Programme;
 import pfe.spring.entity.Rapport;
 
 import java.util.List;
-
+/*
 public interface RapportService {
 
     public void generateReportIfNeeded(Programme programme);
@@ -20,3 +20,4 @@ public interface RapportService {
 
 
 }
+*/

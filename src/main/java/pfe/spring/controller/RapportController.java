@@ -3,7 +3,7 @@ package pfe.spring.controller;
 
 import pfe.spring.entity.Programme;
 import pfe.spring.entity.Rapport;
-import pfe.spring.service.RapportService;
+//import pfe.spring.service.RapportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("/Rapport/")
 @CrossOrigin("*")
 public class RapportController {
-
+/*
     @Autowired
     public RapportService rapportService;
 
@@ -56,5 +56,5 @@ public class RapportController {
     public List<Rapport> getAllRapport(){
        return rapportService.getAllRapport();}
 
-
+*/
 }

@@ -41,8 +41,8 @@ public class ProgrammeServiceImpl implements ProgrammeService{
     @Autowired
     SessionContribuableRepo sessionContribuableRepo;
 
-    @Autowired
-    RapportService rapportService;
+    //@Autowired
+   // RapportService rapportService;
 
 
     @Override
@@ -148,7 +148,7 @@ public class ProgrammeServiceImpl implements ProgrammeService{
             programme.setOverallProgress(overallProgress);
             if (overallProgress == 100) {
                 log.info("Overall Progress is 100% for Programme with ID: {}", idProgramme);
-                rapportService.generateReportIfNeeded(programme);
+              //  rapportService.generateReportIfNeeded(programme);
             }
             return overallProgress;
         }

@@ -15,7 +15,7 @@ import pfe.spring.entity.User;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
-
+/*
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -89,3 +89,5 @@ public class RapportServiceImpl implements RapportService {
 
 
 }
+
+ */
