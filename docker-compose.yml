@@ -7,43 +7,43 @@ services:
     image: ziedhechmi/pfe_backend
     container_name: pfe_backend
     environment:
-      SPRING_APPLICATION_JSON: '{
-            "server.port" : "8082",
-            "spring.datasource.url"  : "jdbc:mysql://mysqldb:3306/restitution?createDatabaseIfNotExist=true",
-            "spring.datasource.username" : "root",
-            "spring.data.mongodb.uri"  : "mongodb://mongodb:27017/restitution",
-            "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL5InnoDBDialect",
-            "spring.jpa.hibernate.ddl-auto" : "update"
-          }'
+      - SERVER_PORT=8082
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/restitution?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_DATA_MONGODB_URI=mongo://mongo-db:27017/restitution
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - MANAGEMENT.ENDPOINTS.WEB.EXPOSURE.INCLUDE=*
+      - MANAGEMENT.ENDPOINT.PROMETHEUS.ENABLED=true
+      - MANAGEMENT.ENDPOINT.METRICS.ENABLED=true
+      - management.endpoint.health.show-details=always
     restart: on-failure
     ports:
       - "8082:8082"
     depends_on:
-      - mysqldb
-      - mongodb
-    volumes:
-      - app_data:/app/data
-
-  mysqldb:
-    container_name: mysqldb
-    image: mysql:latest
+      - mysql-db
+      - mongo-db
+  mysql-db:
+    image: mysql:5.7
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: yes
-      MYSQL_DATABASE: devops
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=restitution
     ports:
-      - "3306:3306"
+      - 3306:3306
     volumes:
-      - db:/var/lib/mysql
+      - db_data_mysql:/var/lib/mysql
+    container_name: mysql_db
 
-  mongodb:
-    container_name: mongodb
+  mongo-db:
     image: mongo:latest
     ports:
-      - "27017:27017"
+      - 27017:27017
     volumes:
-      - mongodb_data:/data/db
+      - mongodb_data:/data/mongo
+    container_name: mongo_db
 
 volumes:
-  app_data:
+  db_data_mysql:
   db:
   mongodb_data:
