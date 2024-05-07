@@ -10,7 +10,7 @@ pipeline {
          dockerCredential = 'dockerhub_id'
          dockerImage = ''
          latestDockerImage=''
-
+         scannerHome = tool 'sonarscanner'
     }
 
     stages {
